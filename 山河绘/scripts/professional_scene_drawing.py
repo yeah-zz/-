@@ -8,7 +8,7 @@ from master_studio.digital_strokes import DigitalStroke, render, replay
 from professional_clpd import write
 
 
-def render_pair(out, row, rgb, s0, s2):
+def render_pair(out, row, rgb, s0, candidate, candidate_name="s2"):
     size=(400,400)
     def candidates(pred, kind):
         contours,_=cv2.findContours((pred==kind).astype(np.uint8),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
@@ -21,7 +21,7 @@ def render_pair(out, row, rgb, s0, s2):
                 paths.append(points)
         return paths
 
-    masks={"s0":s0,"s2":s2}
+    masks={"s0":s0,candidate_name:candidate}
     paths={method:{kind:candidates(p,kind) for kind in (1,2)} for method,p in masks.items()}
     budget={k:min(5,*(len(p[k]) for p in paths.values())) for k in (1,2)}
     if not all(budget.values()):
@@ -58,5 +58,7 @@ def render_pair(out, row, rgb, s0, s2):
         board.paste(canvas,(420+(i-1)*408,55))
         pen.text((420+(i-1)*408,32),method.upper(),font=font,fill="#204335")
     board.save(out/"drawing_comparison.png")
-    write(out/"drawing_protocol.json",dict(source=row["id"],source_sha256=row["image_sha256"],
-          budget=budget,scope="only semantic silhouette extraction is learned; brush is rule-based"))
+    protocol = dict(source=row["id"],source_sha256=row["image_sha256"],
+                    budget=budget,scope="only semantic silhouette extraction is learned; brush is rule-based")
+    write(out/"drawing_protocol.json",protocol)
+    return protocol

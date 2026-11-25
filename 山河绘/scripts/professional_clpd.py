@@ -41,21 +41,22 @@ def tree(path):
         url = link[1] if link else None
 
 
-def fetch(root, item):
+def fetch(root, item, cache=None):
     remote = item["path"]
     target = root / remote
     target.parent.mkdir(parents=True, exist_ok=True)
     expected = item.get("lfs", {}).get("oid")
     for attempt in range(3):
         try:
-            content = target.read_bytes() if target.is_file() else None
+            cached = target if target.is_file() else (cache / remote if cache else None)
+            content = cached.read_bytes() if cached is not None and cached.is_file() else None
             stale=content is None or len(content)!=item["size"] or (expected and sha256(content).hexdigest()!=expected)
             if stale:
                 with request(FILES + quote(remote)) as response:
                     content = response.read()
             if len(content)!=item["size"] or (expected and sha256(content).hexdigest()!=expected):
                 raise ValueError(f"Publisher digest or size mismatch for {remote}")
-            if stale:
+            if stale or not target.is_file():
                 temporary = target.with_suffix(target.suffix + ".part")
                 temporary.write_bytes(content)
                 temporary.replace(target)
@@ -119,7 +120,7 @@ def split_groups(rows):
     return near
 
 
-def acquire(output, per_work, work_limit):
+def acquire(output, per_work, work_limit, cache=None):
     output.mkdir(parents=True,exist_ok=True)
     groups=defaultdict(list)
     inventory={}
@@ -150,8 +151,8 @@ def acquire(output, per_work, work_limit):
 
     def read_pair(t):
         image,mask,split,work=t
-        image_path,img_sha=fetch(output,image)
-        mask_path,mask_sha=fetch(output,mask)
+        image_path,img_sha=fetch(output,image,cache)
+        mask_path,mask_sha=fetch(output,mask,cache)
         with Image.open(image_path) as im, Image.open(mask_path) as annotation:
             array=np.asarray(annotation)
             ids=np.unique(array).tolist()
@@ -191,7 +192,9 @@ if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--per-work",type=int,default=5)
     parser.add_argument("--works",type=int,default=24)
+    parser.add_argument("--output", type=Path, default=ROOT / "clpd")
+    parser.add_argument("--cache", type=Path)
     options=parser.parse_args()
     if options.per_work<1 or options.works<6:
         parser.error("positive per-work cap and at least six work groups required")
-    acquire(ROOT/"clpd",options.per_work,options.works)
+    acquire(options.output, options.per_work, options.works, options.cache)

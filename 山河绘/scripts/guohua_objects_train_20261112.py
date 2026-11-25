@@ -26,7 +26,7 @@ class ContextObjects(nn.Module):
   super().__init__();base=mobilenet_v3_small(weights=None);base.load_state_dict(torch.load(WEIGHTS,map_location='cpu',weights_only=True));self.encoder=base.features;self.encoder.requires_grad_(False);self.lateral=nn.ModuleList([nn.Conv2d(c,32,1) for c in [16,24,48,576]]);self.head=nn.Sequential(nn.Conv2d(128,64,3,padding=1),nn.GroupNorm(8,64),nn.SiLU(),nn.Conv2d(64,32,3,padding=1),nn.GroupNorm(8,32),nn.SiLU(),nn.Conv2d(32,3,1))
  def forward(self,x):
   shape=x.shape[-2:];self.encoder.eval();layers=[]
-  with torch.no_grad():
+  with torch.set_grad_enabled(torch.is_grad_enabled() and any(p.requires_grad for p in self.encoder.parameters())):
    for i,block in enumerate(self.encoder):
     x=block(x)
     if i in [1,3,8,12]:layers.append(x)
