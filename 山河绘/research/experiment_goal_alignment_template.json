@@ -1,0 +1,42 @@
+{
+  "primary_goal_id": null,
+  "supporting_goal_ids": [],
+  "experiment_kind": "recognition_training_or_stroke_reconstruction_or_engineering_support",
+  "specific_capability_to_test": null,
+  "baseline_artifacts_and_hashes": [],
+  "data_work_groups_and_provenance": [],
+  "reference_status": "assistant_reference_or_expert_checked_or_observable_video_evidence_or_unknown",
+  "model_input_and_direct_output": null,
+  "manual_intervention_and_postprocessing": [],
+  "selection_uses_training_development_only": true,
+  "previously_opened_checks_are_regression_only": true,
+  "heldout_works": [],
+  "evaluation": {
+    "contour_omissions": null,
+    "wrong_connections": null,
+    "duplicate_coverage": null,
+    "cun_stroke_and_group_retention": null,
+    "foliage_entering_cun": null,
+    "object_and_stage_order": null,
+    "stroke_band_shape": null
+  },
+  "new_capability_evidence": null,
+  "independent_validation_passed": false,
+  "production_replaced": false,
+  "robot_connected": false,
+  "project_plan": "F:\\山河绘\\山河绘\\PROJECT_PLAN.md",
+  "round_report_template": "F:\\山河绘\\山河绘\\research\\ROUND_REPORT_TEMPLATE.md",
+  "round_report_file": null,
+  "mandatory_report_sections": [
+    "推进哪项目标",
+    "实际新增什么能力",
+    "还有哪些失败",
+    "是否通过独立验证"
+  ],
+  "agent_participation": "none_or_retrieval_or_planning_or_tool_orchestration",
+  "agent_planning_test_separate_from_perception": true,
+  "validation_scope": "not_tested_or_engineering_checks_or_known_regression_or_independent_works_or_physical",
+  "adoption_decision": "not_adopted_or_local_or_object_or_full",
+  "rollback_baseline": null,
+  "failures_and_regressions": []
+}

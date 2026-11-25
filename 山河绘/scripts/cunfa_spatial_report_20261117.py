@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+import sys,json,shutil
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from gongbi_training.runtime import configure,LAB
+configure()
+from PIL import Image,ImageDraw,ImageFont
+ROOT=LAB/'cunfa_spatial_pairs_20261117';PROJECT=Path(__file__).resolve().parents[1]
+LABEL={'outline_context':'结构边','interior_mark_context':'内部墨迹','diffuse_tone':'连续淡墨面','unmarked_surface':'未着墨面',None:'待定／排除山石角色'}
+ARMS=['frozen_photometry','frozen_relational','expanded_global','expanded_spatial_pyramid']
+TITLES=['旧灰度候选','上轮大窗口候选','本轮全局平均','本轮空间特征网格']
+def read(p):return json.loads(Path(p).read_text('utf8'))
+def main():
+ result=read(ROOT/'results.json');manifest=read(ROOT/'reference_manifest.json');pred={r['id']:r for r in result['records']};sourcepaths={};cases=[]
+ font=lambda n:ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',n)
+ for r in manifest['records']:
+  key=r['reference_image']
+  if key not in sourcepaths:
+   im=Image.open(key).convert('RGB');native=im.size;im.thumbnail((1000,1000));dest='views/context_'+str(len(sourcepaths))+'.jpg';im.save(ROOT/dest,quality=92);sourcepaths[key]=(dest,native)
+  dest,native=sourcepaths[key];p=pred[r['id']]
+  cases.append(dict(**p,source_url=r['source_url'],source_image=dest,native_size=native,box=r['box'],local='views/'+r['id']+'_local.png',near='views/'+r['id']+'_near.png',evidence=r['visual_evidence'],object_type=r['object_type'],group=r['role_fold_group'],added=r.get('added_this_round',False)))
+ report=dict(cases=cases,selected=result['selected_arm'],metrics=result['check_metrics'],oof=result['training_oof_metrics'],arms=ARMS,titles=TITLES,labels=LABEL)
+ (ROOT/'report_data.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8')
+ chosen=['ntm_xia_region_2','ntm_huang_region_6','shen_attributed_0','shen_attributed_2','shen_attributed_4']
+ board=Image.new('RGB',(1500,600),'#f3f0e7');d=ImageDraw.Draw(board);d.text((15,10),'保留空间细节后的真实角色预测：局部原图与全部对照',font=font(26),fill='#243f35')
+ for i,ident in enumerate(chosen):
+  r=next(x for x in cases if x['id']==ident);im=Image.open(ROOT/r['local']);native=im.size;s=min(270/im.width,175/im.height);im=im.resize((max(1,round(im.width*s)),max(1,round(im.height*s))),Image.Resampling.NEAREST);x=12+i*300;board.paste(im,(x,65));d.text((x,253),ident,font=font(15),fill='#243f35');d.text((x,283),'参考：'+LABEL[r['role_reference']],font=font(19),fill='#805333')
+  for j,a in enumerate(ARMS):d.text((x,320+34*j),TITLES[j]+'：'+LABEL[r['predictions'][a]],font=font(16),fill='#286e7c')
+ a=result['selected_arm'];k=result['check_metrics']['known12'][a];f=result['check_metrics']['fresh_work'][a]
+ d.text((15,491),f"训练内选中：{TITLES[ARMS.index(a)]}；旧检查{k['agreement']}/{k['regions']}，新作品{f['agreement']}/{f['regions']}。",font=font(22),fill='#994d38')
+ d.text((15,536),'助手局部参考，不是专家真值；不是完整笔触提取、皴法复刻或机械臂实画。',font=font(22),fill='#243f35');board.save(ROOT/'comparison.jpg',quality=94)
+ page='''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>结构边、淡墨与留白 · 新作品及空间特征对照</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f3f0e7;color:#243f35;font:17px/1.7 "Microsoft YaHei",sans-serif}main{max-width:1450px;margin:auto;padding:24px}h1{font-size:29px}h2{font-size:23px}.note{padding:15px;background:#fff8e7;border-left:5px solid #ac773a}.warn{color:#98523d}a{color:#286d69}img,canvas{display:block;max-width:100%;height:auto}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{min-width:0;background:#fffdf8;padding:12px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%}td,th{padding:9px;border-bottom:1px solid #cbd4c4;text-align:left}select{font:inherit;padding:8px;max-width:100%;width:850px}small{color:#7c654c}@media(max-width:750px){main{padding:14px}.grid{grid-template-columns:1fr}h1{font-size:24px}}</style><main>
+<small>2026-11-17 · 离线研究候选 · 给定局部区域角色</small><h1>补独立作品，保留局部特征的位置再比较</h1><p class="note" id="summary"></p>
+<h2>这次改变了什么</h2><p>新增3件博物馆藏品图像：王翬《溪山雨霁图》、龚贤山水册首张馆藏图用于开发；《秋色山水》馆方注明“传沈周”，整体作品仅作本轮首次检查。馆方来源只核对作品身份和公开图像，不把作品说明当作局部角色标签，也没有确认本项目所有旧资料中的作品级近重复。</p><p>25处新候选中，11处开发参考加入训练，6处作新作品检查，8处因灰面混有线条、色层不能确定、树叶或建筑等保留待定／排除。角色训练38→49处。新作品没有可靠淡墨标签，不能据此验收淡墨泛化；“传沈周”不能当作已认证的新作者。</p><p>两组使用同一批资料和固定低维分类器：全局平均特征作为对照；另一组在冻结编码器特征图上保留1×1与2×2分区，比较空间位置是否有用。训练内按整件作品留出选择；新作品的参考和预测均不进入拟合或参数选择。只输入静态局部与2.5倍邻域，没有前帧或参考遮罩。</p>
+<div class="scroll"><table><thead><tr><th>方法</th><th>训练内平均类别召回</th><th>旧12处对应</th><th>新作品6处对应</th><th>状态</th></tr></thead><tbody id="metrics"></tbody></table></div><p class="warn">新作品仅6处助手参考，且开发图与检查图来自同一博物馆，不是专家认证或跨机构验收；本轮不训练皴法类别及未知拒识。没有替换实画版本。</p>
+<h2>原图与实际输出</h2><img src="comparison.jpg" alt="局部原图与四个候选角色预测"><div class="scroll"><table><thead><tr><th>新作品角色</th><th>参考数</th><th>旧灰度</th><th>上轮窗口</th><th>本轮全局</th><th>本轮空间</th></tr></thead><tbody id="roles"></tbody></table></div>
+<h2>逐处查看来源位置、依据和预测</h2><select id="case"></select><p id="scope"></p><div class="grid"><div class="card">原始局部（显示缩放）<img id="local"></div><div class="card">2.5倍邻域<img id="near"></div><div class="card">原图位置（矩形只用于定位）<img id="source" style="display:none"><canvas id="locator"></canvas></div></div><p id="evidence"></p><p id="refnote" class="warn">无完整对象边界、逐笔归属或墨带真值；区域参考不能作为自动删线或机械臂落笔依据。</p><p><a id="source_link" target="_blank">馆藏／教材原出处</a></p><div class="scroll"><table><thead><tr><th>参考与方法</th><th>角色</th></tr></thead><tbody id="predictions"></tbody></table></div>
+<h2>选中候选的全部检查错例</h2><div id="failures"></div><p>树木画法训练保持关闭；树叶不进入山石角色监督，也没有被当作纸面负例。本轮只验证给定窗口的角色，尚未形成完整笔触、笔组、皴法辨识或绘画顺序能力。保留原始轨迹及认可的绘画版本，本轮未连接机械臂。</p><p><a href="reference_manifest.json">冻结参考与待定修改</a> · <a href="source_inventory.json">馆藏来源与图像哈希</a> · <a href="protocol.json">训练协议</a> · <a href="training_selection.json">训练内选择</a> · <a href="results.json">全部预测</a> · <a href="verification.json">核验</a> · <a href="feature_replay.json">旧特征重放误差</a></p></main>
+<script>let D;const $=id=>document.getElementById(id),names={outline_context:'结构边',interior_mark_context:'内部墨迹',diffuse_tone:'连续淡墨面',unmarked_surface:'未着墨面'},rn=r=>names[r]||'待定／排除山石角色';function show(){const r=D.cases[$('case').selectedIndex];$('local').src=r.local;$('near').src=r.near;$('source').onload=()=>{const im=$('source'),c=$('locator');c.width=im.naturalWidth;c.height=im.naturalHeight;let ctx=c.getContext('2d');ctx.drawImage(im,0,0);ctx.strokeStyle='#e25335';ctx.lineWidth=3;let b=r.box,sx=c.width/r.native_size[0],sy=c.height/r.native_size[1];ctx.strokeRect(b[0]*sx,b[1]*sy,(b[2]-b[0])*sx,(b[3]-b[1])*sy)};$('source').src=r.source_image;$('scope').textContent=r.id+' / '+r.split+' / 对象：'+r.object_type+' / 作品组：'+r.group;$('evidence').textContent='助手参考依据：'+r.evidence;$('source_link').href=r.source_url;$('predictions').innerHTML='<tr><td>参考</td><td>'+rn(r.role_reference)+'</td></tr>'+D.arms.map((a,i)=>'<tr><td>'+D.titles[i]+'</td><td>'+rn(r.predictions[a])+'</td></tr>').join('')}fetch('report_data.json').then(r=>r.json()).then(d=>{D=d;let a=d.selected,k=d.metrics.known12[a],f=d.metrics.fresh_work[a];$('summary').textContent='已新增11处开发角色参考，并完成全局／空间特征两组训练。训练内选中：'+d.titles[d.arms.indexOf(a)]+'；旧12处对应 '+k.agreement+'/'+k.regions+'；新作品对应 '+f.agreement+'/'+f.regions+'。这仍是少量助手参考上的研究结果，没有替换绘画版本。';d.arms.forEach((a,i)=>{let k=d.metrics.known12[a],f=d.metrics.fresh_work[a],o=d.oof[a],tr=document.createElement('tr');tr.innerHTML='<td>'+d.titles[i]+'</td><td>'+(o?(100*o.macro_recall).toFixed(1)+'%':'冻结对照')+'</td><td>'+k.agreement+'/'+k.regions+'</td><td>'+f.agreement+'/'+f.regions+'</td><td>'+(a===d.selected?'训练内选中':'对照')+'</td>';$('metrics').append(tr)});Object.keys(names).forEach(role=>{let tr=document.createElement('tr'),n=d.metrics.fresh_work[d.arms[0]].per_role[role].count;tr.innerHTML='<td>'+rn(role)+'</td><td>'+n+'</td>'+d.arms.map(a=>'<td>'+(n?d.metrics.fresh_work[a].per_role[role].agreement:'无参考')+'</td>').join('');$('roles').append(tr)});d.cases.forEach(r=>{let o=document.createElement('option');o.textContent=r.id+' / '+r.split+(r.added?' / 本轮新增':'');$('case').append(o)});$('case').onchange=show;$('case').selectedIndex=d.cases.findIndex(r=>r.id==='shen_attributed_0');show();d.cases.filter(r=>['test','fresh_check'].includes(r.split)&&r.role_reference!==null&&r.selected_prediction!==r.role_reference).forEach(r=>{let p=document.createElement('p');p.textContent=r.id+'：参考 '+rn(r.role_reference)+' → '+rn(r.selected_prediction)+'；'+r.evidence;$('failures').append(p)});window.reportReady=true});</script></html>'''
+ (ROOT/'index.html').write_text(page,encoding='utf8')
+ server=(PROJECT/'scripts/serve_guohua_objects_v2_20261113.py').read_text('utf8').replace('guohua_objects_v2_20261113','cunfa_spatial_pairs_20261117');a=server.index('ALLOWED={');b=server.index('\nALLOWED.update',a)
+ allowed={'index.html','comparison.jpg','report_data.json','reference_manifest.json','source_inventory.json','protocol.json','training_selection.json','results.json','verification.json','contract_checks.json','feature_replay.json','postexperiment_checks.json'}
+ server=server[:a]+'ALLOWED='+repr(allowed)+server[b:];server=server.replace('str(Path(__file__).resolve().parents[1])',repr(str(PROJECT)));(ROOT/'serve_report.py').write_text(server,encoding='utf8')
+ print('REPORT_READY',len(cases),flush=True)
+if __name__=='__main__':main()

@@ -1,0 +1,12 @@
+[project]
+name = "arm-painting"
+version = "0.1.0"
+description = "机械臂绘画：图像 -> 色块/墨线 -> 笔触 -> E6 轨迹（色块铺色 / 水墨框架 / 淡彩）"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.21",
+    "opencv-python>=4.8",
+]
+
+[tool.uv]
+package = false

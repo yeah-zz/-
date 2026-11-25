@@ -1,0 +1,9 @@
+import sys,json
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from gongbi_training.runtime import configure,LAB
+configure()
+r=LAB/'guohua_faint_sources_20261116';ds=json.loads((r/'dataset_manifest.json').read_text('utf8'));refs=json.loads((r/'references.json').read_text('utf8'))
+bundle=dict(scene_schema='scene_object_v1',scene_class_ids={'0':'open_scene','1':'rock','2':'tree','3':'other_object','255':'unknown'},legacy_coarse_targets_schema='legacy0=other_named_object,1=rock,2=tree,255=unknown; remap0to3 before mixing with new scene labels',ink_schema='visible_ink_v1; all255 unknown in this round',records=[dict(id=c['id'],work_group=c['work_group'],image=c['image'],scene_target=str(r/'masks'/(c['id']+'_scene_sparse.png')),ink_target=str(r/'masks'/(c['id']+'_ink_unknown.png')),status='assistant_reference_development_only_not_expert') for c in refs['cases']],used_for_training=False,expert_reviewed=False,robot_connected=False)
+(r/'scene_annotation_manifest.json').write_text(json.dumps(bundle,ensure_ascii=False,indent=2),encoding='utf8')
+p=LAB/'guohua_hierarchy_20261112/current_milestones.json';s=json.loads(p.read_text('utf8'));assert not any(s['capability_state'].values());s.update(latest_reference_file=str(r/'references.json'),latest_reference_report=json.loads((r/'server.json').read_text('utf8'))['url'],latest_reference_diagnostics=str(r/'results.json'),latest_scene_annotation_manifest=str(r/'scene_annotation_manifest.json'),latest_reference_status='8 development images in3 filename works;6 images26 assistant regions;2 other work groups47paths reserved metadata-only; scene/ink schemas separated',latest_reference_expert_reviewed=False,new_model_trained_this_round=False,scene_background_class_trained=False,production_replaced=False,robot_connected=False);p.write_text(json.dumps(s,ensure_ascii=False,indent=2),encoding='utf8');print(s['latest_reference_report'])

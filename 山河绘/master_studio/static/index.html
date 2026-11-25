@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>山河绘 · 名家笔触实验室</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<aside class="rail">
+  <a class="brand" href="#top"><span class="seal">山</span><span><b>山河绘</b><small>名家笔触实验室</small></span></a>
+  <div class="rail-label">创 作 空 间</div>
+  <nav>
+    <button class="rail-link active" data-go="masters"><i>壹</i>名家谱</button>
+    <button class="rail-link" data-go="workbench"><i>贰</i>创作台</button>
+    <button class="rail-link" data-go="previews"><i>叁</i>预览选画</button>
+    <button class="rail-link" data-go="anatomy"><i>肆</i>笔触解剖</button>
+    <button class="rail-link" data-go="training"><i>伍</i>风格训练</button>
+    <button class="rail-link" data-go="corpus"><i>陆</i>图库</button>
+    <button class="rail-link" data-go="tree"><i>柒</i>树法</button>
+  </nav>
+  <div class="rail-note">
+    <svg viewBox="0 0 180 110" aria-hidden="true"><path d="M0 92 38 43 62 70 92 28 128 67 154 46 180 78M20 98l30-24 12 13 26-31 24 28 17-14 30 26M95 102l20-18 12 9 17-14 22 20"/></svg>
+    <p>一笔一画<br>皆有来处</p>
+  </div>
+  <div class="rail-foot"><span>SHAN HE HUI</span><span>V1.0 · 规则蒸馏</span></div>
+</aside>
+
+<main id="top">
+  <header class="topbar">
+    <div class="crumb">创作空间 <span>/</span> <b>名家笔触实验室</b></div>
+    <div class="top-right">
+      <span class="pulse"><i></i>本地模型已就绪</span>
+      <span class="date" id="today"></span>
+      <span class="avatar">墨</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow"><span></span>山 水 有 意 · 笔 墨 生 息</div>
+      <h1>把名家的笔，<br><em>交给机械臂。</em></h1>
+      <p>不是把一张画变成滤镜，而是把黄公望的披麻、倪瓒的折带、石涛的湿笔拆成可执行的线质、皴法、点苔与留白。先看四幅预览，再选一幅落墨。</p>
+      <div class="hero-actions">
+        <button class="btn primary" data-go="masters">选择名家 <span>→</span></button>
+        <button class="btn ghost" data-go="anatomy">先看笔触解剖</button>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="art-frame">
+        <svg viewBox="0 0 520 400">
+          <defs>
+            <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency=".02 .08" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7"/></filter>
+            <linearGradient id="wash" x2="0" y2="1"><stop stop-color="#345e55" stop-opacity=".55"/><stop offset="1" stop-color="#a9b8a6" stop-opacity=".04"/></linearGradient>
+          </defs>
+          <g filter="url(#rough)">
+            <path d="M30 300 120 190 165 225 215 135 260 190 305 120 360 220 405 170 495 285 495 330 30 330Z" fill="url(#wash)"/>
+            <path d="M30 300 120 190 165 225 215 135 260 190 305 120 360 220 405 170 495 285" fill="none" stroke="#243d35" stroke-width="3" stroke-linecap="round"/>
+            <path d="M215 135l-18 60-26 40m24-34 18-18 4 32-24 42m62-83 8 55 20 29m-83-42-22 38-8 34" fill="none" stroke="#345c52" stroke-opacity=".45" stroke-width="1.5"/>
+            <path d="M60 330q80-14 170 0m100-10q70-9 150 0M120 350q100-10 220 0" fill="none" stroke="#6f8f80" stroke-opacity=".35"/>
+            <g fill="#2f4a40"><circle cx="118" cy="196" r="2.2"/><circle cx="126" cy="190" r="1.8"/><circle cx="218" cy="140" r="2.4"/><circle cx="226" cy="146" r="1.6"/><circle cx="306" cy="126" r="2.2"/><circle cx="313" cy="132" r="1.7"/><circle cx="406" cy="175" r="2.1"/></g>
+          </g>
+          <g class="birds" fill="none" stroke="#3f5e53" stroke-width="1.4"><path d="M390 80q5-5 10 0 5-5 10 0m-50 20q4-4 8 0 4-4 8 0"/></g>
+        </svg>
+        <span class="art-seal">山河</span>
+      </div>
+      <div class="hero-stat"><b>05</b><span>名家笔法模型</span></div>
+      <div class="hero-stat"><b>06</b><span>山水构图母题</span></div>
+      <div class="hero-stat"><b>07</b><span>线质 · 皴法 · 点景</span></div>
+    </div>
+  </section>
+
+  <section id="masters" class="section">
+    <div class="section-head">
+      <div><span class="kicker">壹 · 名家谱</span><h2>先选一位画家，再谈一笔一画</h2></div>
+      <p>每套模型不是“风格滤镜”，而是把画史中可复核的用笔习惯拆成七组参数：线质、皴法、点苔、树法、墨法、构图、题款。</p>
+    </div>
+    <div id="artist-grid" class="artist-grid"></div>
+  </section>
+
+  <section id="workbench" class="section workbench">
+    <div class="section-head">
+      <div><span class="kicker">贰 · 创作台</span><h2>让风格先长出四幅草稿</h2></div>
+      <p>同一套笔法参数，换构图、换呼吸、换留白。先看四幅，再决定哪一幅值得落到纸上。</p>
+    </div>
+    <div class="work-grid">
+      <aside class="model-card" id="model-card"></aside>
+      <div class="control-card">
+        <div class="control-row">
+          <label>画面母题</label>
+          <div id="scene-pills" class="pills"></div>
+        </div>
+        <div class="control-row">
+          <label>气韵</label>
+          <div id="mood-pills" class="pills"></div>
+        </div>
+        <div class="control-row two">
+          <div><label for="count">预览幅数</label><select id="count"><option>2</option><option selected>4</option><option>6</option></select></div>
+          <div><label for="detail">细节密度</label><input id="detail" type="range" min="0.7" max="1.3" step="0.05" value="1"><span id="detail-label">标准</span></div>
+          <div><label for="abstraction">抽象度</label><input id="abstraction" type="range" min="0" max="0.8" step="0.05" value="0"><span id="abs-label">写实</span></div>
+        </div>
+        <div class="control-row">
+          <label>这一笔，会怎么走</label>
+          <div class="stroke-preview" id="stroke-preview">
+            <svg viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
+              <g id="stroke-demo"></g>
+              <polyline id="speed-demo" fill="none" stroke="#a34435" stroke-width="1.4" stroke-dasharray="3 4" opacity=".75"></polyline>
+            </svg>
+            <div class="stroke-meta"><span>起笔 · 轻顿</span><span>行笔 · 提按（曲率大处减速）</span><span>收笔 · 出锋</span></div>
+          </div>
+        </div>
+        <div class="control-foot">
+          <div class="hint" id="generate-hint">选择名家后，可生成 2–6 幅预览。</div>
+          <button class="btn primary" id="generate">生成预览 <span>→</span></button>
+        </div>
+        <div class="progress" id="progress" hidden><div id="progress-bar"></div><span id="progress-label">准备笔墨</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="previews" class="section">
+    <div class="section-head">
+      <div><span class="kicker">叁 · 预览选画</span><h2>四幅之中，选一幅落墨</h2></div>
+      <p>每幅预览都记录了逐笔中心线、压力与速度。选定后可导出为现有工作台可读的绘画包。</p>
+    </div>
+    <div id="preview-grid" class="preview-grid">
+      <div class="empty-state"><span>尚未落笔</span><p>先在创作台选择名家与母题，生成预览。</p></div>
+    </div>
+  </section>
+
+  <section id="anatomy" class="section anatomy">
+    <div class="section-head">
+      <div><span class="kicker">肆 · 笔触解剖</span><h2>线不是线，是压力、速度与含水量</h2></div>
+      <p>机械臂过去只画“中心线”。现在每一笔都带起收、提按、飞白与散锋，皴法、点苔、树法各自有独立参数。</p>
+    </div>
+    <div class="anatomy-grid">
+      <article><span class="num">01</span><h3>线质</h3><p>起笔顿、行笔提按、收笔出锋；同一根线有粗细、干湿、断连，而不是等宽折线。</p><div class="meter"><i style="width:88%"></i></div><small>黄公望 · 长披大抹</small></article>
+      <article><span class="num">02</span><h3>皴法</h3><p>披麻、折带、斧劈、米点、雨点、乱柴，各自决定笔向、长短、疏密与叠压顺序。</p><div class="meter"><i style="width:72%"></i></div><small>石涛 · 万点恶墨</small></article>
+      <article><span class="num">03</span><h3>点景</h3><p>苔点沿山脊成组，松针成扇，亭舟只取数笔。点不是装饰，是让山有呼吸的标点。</p><div class="meter"><i style="width:64%"></i></div><small>龚贤 · 积墨点苔</small></article>
+    </div>
+  </section>
+
+  <section id="training" class="section training">
+    <div class="section-head">
+      <div><span class="kicker">伍 · 风格训练</span><h2>把你的原作，也训练成一套笔法</h2></div>
+      <p>上传同一画家的 3–12 幅作品，系统统计墨色覆盖、边缘密度、笔向分布、留白与色度，生成一套可解释的自定义笔法模型。</p>
+    </div>
+    <div class="train-grid">
+      <div class="upload-box" id="upload-box">
+        <input id="train-files" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+        <div class="upload-icon">＋</div>
+        <b>拖入或点击上传原作</b>
+        <span>PNG / JPG / WEBP · 建议 3 幅以上</span>
+        <div id="train-files-list" class="files"></div>
+      </div>
+      <div class="train-form">
+        <label for="train-name">模型名称</label>
+        <input id="train-name" placeholder="例如：渐江 · 黄山笔意" maxlength="20">
+        <label for="train-base">以哪套模型为底</label>
+        <select id="train-base"></select>
+        <button class="btn primary" id="train-btn">开始训练 <span>→</span></button>
+        <p class="fine">v1 采用“统计特征 + 笔法规则”的可解释蒸馏；神经风格编码器接口已预留，可在后续版本替换。</p>
+      </div>
+      <div class="train-result" id="train-result"><span>训练结果</span><p>上传作品后，这里会出现风格指纹与可用的预览入口。</p></div>
+    </div>
+  </section>
+
+
+  <section id="corpus" class="section corpus">
+    <div class="section-head">
+      <div><span class="kicker">陆 · 图库与皴法</span><h2>从公共领域原作，提取真正的山石 patch</h2></div>
+      <p>先下载 Met Open Access 的公共领域作品，再自动裁出 240×240 的山石局部，按披麻、折带、斧劈、米点四类训练。图库为空时不会假装训练完成。</p>
+    </div>
+    <div class="corpus-grid">
+      <div id="corpus-artists" class="corpus-artists"></div>
+      <aside class="corpus-panel">
+        <div class="corpus-actions">
+          <button class="btn primary" id="corpus-download">下载公共图库</button>
+          <button class="btn ghost" id="corpus-extract">提取山石 patch</button>
+          <button class="btn ghost" id="corpus-train">训练四类皴法</button>
+        </div>
+        <div id="corpus-msg" class="corpus-msg">图库与模型状态</div>
+        <div id="corpus-model" class="corpus-model">模型：尚未训练</div>
+        <p class="fine">若本机访问 Met 图片失败，可在有外网的机器运行：<br><code>python -m master_studio.fetch_corpus --artist all --limit 4</code><br><code>python -m master_studio.train_textures --extract</code></p>
+      </aside>
+    </div>
+  </section>
+  <section id="tree" class="section tree">
+    <div class="section-head">
+      <div><span class="kicker">柒 · 树法工坊</span><h2>树，不再混进山水里</h2></div>
+      <p>山水预览已经移除树木，只保留山石、水口、亭舟。树法作为独立模块单独选择、单独训练；当前先展示从名家原作裁出的树法标本。</p>
+    </div>
+    <div id="tree-cards" class="tree-grid"></div>
+    <p class="fine" id="tree-meta">树法样本加载中…</p>
+  </section>
+  <footer><span>山河绘 · 名家笔触实验室</span><span>以机械为笔，以山河为墨。每一笔，都有来处。</span></footer>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close>×</button>
+    <div class="modal-image"><img id="modal-img" alt="选中预览"></div>
+    <div class="modal-side">
+      <span class="kicker" id="modal-kicker">预览</span>
+      <h2 id="modal-title">—</h2>
+      <p id="modal-desc">—</p>
+      <div id="modal-stats" class="modal-stats"></div>
+      <label for="export-title">绘画包名称</label>
+      <input id="export-title" maxlength="50" value="山河绘 · 名家笔触">
+      <button class="btn primary" id="export-btn">导出机械臂绘画包 <span>→</span></button>
+      <button class="btn ghost" id="install-btn" hidden style="margin-top:8px">保存到待画作品</button>
+      <p class="fine">导出只生成 painting.json，不连接机械臂。保存到待画作品后，重启 8765 工作台即可在画库看到。</p>
+      <div id="export-result" class="export-result" hidden></div>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="/app.js"></script>
+</body></html>

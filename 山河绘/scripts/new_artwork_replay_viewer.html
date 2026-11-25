@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>翟大坤《山水画》｜离线笔顺核查</title>
+<style>
+  *{box-sizing:border-box}body{margin:0;background:#f4f0e6;color:#24382f;font:16px/1.48 "Microsoft YaHei",sans-serif}
+  main{max-width:1170px;padding:24px;margin:auto}h1{font-size:26px;margin:0 0 8px}p{margin:8px 0}
+  a{color:#286249}button,input{accent-color:#286249}button{font:inherit;border:1px solid #a7b6a9;border-radius:5px;background:#fffdfa;padding:6px 11px;color:inherit;cursor:pointer}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:15px 0}.layout{display:grid;grid-template-columns:minmax(0,540px) 1fr;gap:20px}
+  canvas{display:block;background:white;max-height:685px;width:100%;object-fit:contain;border:1px solid #d9ddce}
+  #objects{padding-left:24px}#objects li{padding:5px 9px}li.current{background:#dee9d7;font-weight:600}
+  #seek{width:min(100%,540px)}#stage{font-weight:600;min-height:24px}.small{font-size:14px}.links a{margin-right:15px}
+  @media(max-width:770px){.layout{grid-template-columns:1fr}main{padding:14px}}
+</style>
+<main>
+  <h1>翟大坤《山水画》离线笔顺核查</h1>
+  <p>按原图辅助划定对象后回放。待核笔画另行保留。画布使用等宽轨迹显示。</p>
+  <p class="links"><a href="whole_comparison.png">整幅自动与复核对照</a><a href="review_references.png">原图检查位置</a><a href="offline_plan.json">查看离线轨迹</a></p>
+  <div class="toolbar">
+    <button type="button" id="play">播放</button>
+    <button type="button" id="step">下一笔</button>
+    <button type="button" id="reset">回到开头</button>
+    <label><input type="checkbox" id="ghost"> 显示原图底稿</label>
+    <label>回放速度
+      <select id="speed"><option value="3">3 笔/秒</option><option value="12" selected>12 笔/秒</option><option value="30">30 笔/秒</option></select>
+    </label>
+  </div>
+  <div class="layout">
+    <div><canvas id="canvas" aria-label="轨迹回放画布"></canvas><input id="seek" type="range" min="0" value="0" aria-label="回放进度"></div>
+    <section>
+      <p id="stage" aria-live="polite"></p>
+      <p class="small" id="count"></p>
+      <ol id="objects"></ol>
+      <p class="small">山石先画检查范围内的结构线，再画内部墨线候选。树木按主枝干、次级枝条、枝叶或细节候选排列。</p>
+    </section>
+  </div>
+</main>
+<script type="application/json" id="scene">__OFFLINE_PLAN_JSON__</script>
+<script>
+const plan = JSON.parse(document.getElementById('scene').textContent);
+const canvas = document.getElementById('canvas');
+canvas.width = plan.width;
+canvas.height = plan.height;
+const ctx = canvas.getContext('2d');
+const labels = {rock:['轮廓与结构候选','内部墨线候选','细节候选'],
+                tree:['主枝干候选','次级枝条候选','枝叶与细节候选']};
+const colors = ['#4b8ba5','#b16131','#387652','#90629d','#667526','#647c95'];
+const photo = new Image();
+photo.src = plan.source;
+const seek = document.getElementById('seek');
+const play = document.getElementById('play');
+const active = document.getElementById('stage');
+const tracked = document.getElementById('count');
+const legend = document.getElementById('objects');
+const ghost = document.getElementById('ghost');
+const speed = document.getElementById('speed');
+const total = plan.actions.length;
+seek.max = total;
+let count = 0, timer = null;
+const items = new Map();
+for (const module of plan.modules) {
+  const item = document.createElement('li');
+  legend.appendChild(item);
+  items.set(module.id,item);
+  item.style.color = colors[module.id];
+}
+function paint() {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if (ghost.checked && photo.complete && photo.naturalWidth > 0) {
+    ctx.globalAlpha = .22;
+    ctx.drawImage(photo,0,0,canvas.width,canvas.height);
+    ctx.globalAlpha = 1;
+  }
+  ctx.lineWidth = 1.1;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const done = plan.modules.map(() => 0);
+  for (const act of plan.actions.slice(0,count)) {
+    const points = plan.curves[act.curve].points;
+    const ordered = act.reverse ? [...points].reverse() : points;
+    ctx.beginPath();
+    ctx.moveTo(...ordered[0]);
+    for (const point of ordered.slice(1)) ctx.lineTo(...point);
+    ctx.strokeStyle = colors[act.module];
+    ctx.stroke();
+    done[act.module]++;
+  }
+  const next = plan.actions[count];
+  active.textContent = next ? '下一笔  ·  '+plan.modules[next.module].name+'  ·  '+
+    labels[plan.modules[next.module].kind][next.phase] : '回放完成';
+  tracked.textContent = count+' / '+total+' 笔。另有 '+plan.pending.length+' 笔待核。';
+  seek.value = count;
+  for (const module of plan.modules) {
+    const item = items.get(module.id);
+    item.classList.toggle('current',next?.module === module.id);
+    item.textContent = module.name+' '+done[module.id]+'/'+module.count;
+  }
+}
+function stop() {
+  clearInterval(timer);
+  timer = null;
+  play.textContent = '播放';
+}
+function step() {
+  count = Math.min(total,count+1);
+  paint();
+  if (count===total) stop();
+}
+function start() {
+  if (!total) return;
+  if (count===total) count = 0;
+  play.textContent = '暂停';
+  paint();
+  timer = setInterval(step,1000/Number(speed.value));
+}
+play.onclick = () => timer ? stop() : start();
+document.getElementById('step').onclick = () => {stop();step();};
+document.getElementById('reset').onclick = () => {stop();count=0;paint();};
+seek.oninput = () => {stop();count=Number(seek.value);paint();};
+speed.onchange = () => {if (timer) {stop();start();}};
+ghost.onchange = paint;
+photo.onload = paint;
+paint();
+</script>
+</html>

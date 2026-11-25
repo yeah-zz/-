@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>山河绘 · 原图标注</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f1e8; color: #263a32; font: 15px system-ui, sans-serif; }
+  main { max-width: 1180px; margin: auto; padding: 22px; }
+  h1 { margin: 0 0 12px; font-size: 25px; }
+  h2 { margin: 14px 0 8px; font-size: 17px; }
+  fieldset { border: 1px solid #bcbaaa; border-radius: 6px; padding: 12px; margin: 12px 0; }
+  label { display: inline-flex; flex-direction: column; margin: 3px; gap: 4px; }
+  input, select, button { padding: 7px; border: 1px solid #9dafa6; background: #fffdf7; color: inherit; border-radius: 4px; }
+  button { cursor: pointer; margin: 3px; }
+  canvas { display: block; max-width: 100%; height: auto; background: #deddd4; cursor: crosshair; margin: 12px 0; }
+  output { display: block; padding: 8px; }
+  ol { padding-left: 25px; }
+  .art { max-height: 70vh; overflow: auto; }
+</style>
+<main>
+  <h1>原图结构标注</h1>
+  <form id="form">
+    <fieldset>
+      <legend>来源</legend>
+      <label>原图<input id="file" type="file" accept="image/*"></label>
+      <label>完整作品 ID<input id="work" required></label>
+      <label>作者或馆藏归属<input id="artist" required></label>
+      <label>来源网址<input id="source" type="url" required></label>
+      <label>使用条件<input id="rights" placeholder="例如 CC0、馆藏开放许可" required></label>
+      <label>阅标人<input id="reviewer" required></label>
+    </fieldset>
+    <fieldset>
+      <legend>可见结构</legend>
+      <label>类别<select id="role">
+        <option value="trunk">树干</option><option value="branch">分枝</option><option value="root">树根</option>
+        <option value="rock_face">岩面</option><option value="rock_texture">岩纹</option>
+        <option value="cunfa_group">皴法笔组</option><option value="paper">纸面或留白</option>
+      </select></label>
+      <label>几何<select id="shape"><option value="line">中心线或边界</option><option value="polygon">区域</option></select></label>
+      <label>证据<select id="confidence"><option value="visible">可见</option><option value="pending">待核</option></select></label>
+      <label>结构亚类<input id="subtype" placeholder="例如条带岩纹、披麻皴"></label>
+      <label>备注<input id="note"></label>
+      <button type="button" id="undo">撤销一点</button>
+      <button type="button" id="saveShape">保存结构</button>
+      <output id="status">选择原图后点击画布落点。</output>
+      <div class="art"><canvas id="canvas" width="640" height="160"></canvas></div>
+      <ol id="items"></ol>
+    </fieldset>
+    <fieldset>
+      <legend>结构之间的关系</legend>
+      <label>起始结构<select id="from"></select></label>
+      <label>对应结构<select id="to"></select></label>
+      <label>判断<select id="relation">
+        <option value="geometric_crossing">几何交汇</option><option value="same_semantic">同语义</option>
+        <option value="same_instance">同对象</option><option value="occluded">遮挡</option>
+        <option value="connected">有证据连接</option>
+      </select></label>
+      <label>结论<select id="verdict"><option value="yes">是</option><option value="no">否</option><option value="unknown">待核</option></select></label>
+      <button type="button" id="saveLink">保存关系</button>
+      <ol id="links"></ol>
+    </fieldset>
+    <button id="export">导出标注 JSON</button>
+  </form>
+</main>
+<script>
+const el = (id) => document.getElementById(id);
+const canvas = el("canvas");
+const ctx = canvas.getContext("2d");
+let bitmap, file, digest, points = [];
+const shapes = [], links = [];
+let imageVersion = 0;
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (bitmap) ctx.drawImage(bitmap, 0, 0);
+  const scale = canvas.width / Math.max(1, canvas.getBoundingClientRect().width);
+  for (const item of [...shapes, { points, shape: el("shape").value, confidence: "pending" }]) {
+    if (!item.points.length) continue;
+    ctx.beginPath();
+    ctx.moveTo(...item.points[0]);
+    for (const p of item.points.slice(1)) ctx.lineTo(...p);
+    if (item.shape === "polygon" && item.points.length > 2) ctx.closePath();
+    ctx.lineWidth = 2 * scale;
+    ctx.strokeStyle = item.confidence === "visible" ? "#009e80" : "#af57d2";
+    ctx.stroke();
+    for (const [x, y] of item.points) {
+      ctx.beginPath();
+      ctx.arc(x, y, 3 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fill();
+    }
+  }
+}
+
+el("file").addEventListener("change", async () => {
+  const next = el("file").files[0];
+  if (!next) return;
+  if ((shapes.length || links.length || points.length) && !confirm("切换原图会清除本页标注。继续切换？")) {
+    el("file").value = "";
+    return;
+  }
+  const version = ++imageVersion;
+  try {
+    const nextBitmap = await createImageBitmap(next);
+    const nextDigest = crypto.subtle
+      ? Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", await next.arrayBuffer())), b => b.toString(16).padStart(2, "0")).join("")
+      : null;
+    if (version !== imageVersion) { nextBitmap.close(); return; }
+    if (bitmap) bitmap.close();
+    bitmap = nextBitmap;
+    digest = nextDigest;
+    file = next;
+    shapes.length = links.length = points.length = 0;
+    for (const id of ["from","to","items","links"]) el(id).replaceChildren();
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    el("status").value = "原图已加载。";
+    render();
+  } catch (error) {
+    el("status").value = "无法读取这张图片。";
+  }
+});
+canvas.addEventListener("click", (event) => {
+  if (!bitmap) return;
+  const rect = canvas.getBoundingClientRect();
+  points.push([
+    Math.min(canvas.width - 1, Math.round((event.clientX - rect.left) * canvas.width / rect.width)),
+    Math.min(canvas.height - 1, Math.round((event.clientY - rect.top) * canvas.height / rect.height))
+  ]);
+  render();
+});
+el("shape").onchange = render;
+el("undo").onclick = () => { points.pop(); render(); };
+el("saveShape").onclick = () => {
+  const shape = el("shape").value;
+  if (points.length < (shape === "polygon" ? 3 : 2)) {
+    el("status").value = "线至少需要两个点，区域至少需要三个点。";
+    return;
+  }
+  const id = `S${shapes.length + 1}`;
+  const record = { id, role: el("role").value, shape, confidence: el("confidence").value,
+                   subtype: el("subtype").value.trim(), note: el("note").value.trim(), points };
+  shapes.push(record);
+  points = [];
+  const item = document.createElement("li");
+  item.textContent = `${id} · ${el("role").selectedOptions[0].textContent} · ${el("confidence").selectedOptions[0].textContent}`;
+  el("items").append(item);
+  for (const side of ["from", "to"]) el(side).add(new Option(item.textContent, id));
+  el("status").value = "结构已保存到当前页面。";
+  render();
+};
+el("saveLink").onclick = () => {
+  const from = el("from").value, to = el("to").value;
+  if (!from || !to || from === to) {
+    el("status").value = "请选择两个不同的结构。";
+    return;
+  }
+  const row = { from, to, relation: el("relation").value, verdict: el("verdict").value };
+  links.push(row);
+  const item = document.createElement("li");
+  item.textContent = `${from} ↔ ${to} · ${el("relation").selectedOptions[0].textContent} · ${el("verdict").selectedOptions[0].textContent}`;
+  el("links").append(item);
+};
+el("form").onsubmit = (event) => {
+  event.preventDefault();
+  if (!file || !digest || !shapes.length || points.length) {
+    el("status").value = "请先加载原图，并保存所有正在编辑的结构。";
+    return;
+  }
+  const result = { schema: "shanhehui.structure_review.v1", image_filename: file.name,
+    image_sha256: digest, image_width: canvas.width, image_height: canvas.height,
+    work_id: el("work").value.trim(), artist: el("artist").value.trim(),
+    source_url: el("source").value.trim(), rights: el("rights").value.trim(), reviewer: el("reviewer").value.trim(),
+    coordinate_system: "original_image_xy_pixels", shapes, links };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(result, null, 2)], { type: "application/json" }));
+  const anchor = Object.assign(document.createElement("a"), { href: url, download: "structure_review.json" });
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+</script>
+</html>

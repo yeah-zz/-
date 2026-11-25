@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>按模块完成 · 连续笔画离线对照</title>
+<style>
+body{background:#f4f2eb;color:#252b2c;font:16px/1.6 system-ui;margin:24px auto;padding:0 22px;max-width:1580px}h1{font-size:26px}button,select{font:inherit;padding:6px 12px;border:1px solid #c5cbc5;background:white;border-radius:6px;cursor:pointer}input{width:min(65vw,800px);vertical-align:middle}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}figure{margin:0;background:white;padding:10px;border-radius:10px}canvas,img{width:100%;display:block}figcaption{font-weight:650}.note{background:#e9e7da;padding:12px;border-radius:8px}.stats{display:flex;gap:18px;flex-wrap:wrap}details{padding:12px 0}small{color:#53615c}#status{font-weight:600}table{border-collapse:collapse;width:100%}td,th{padding:6px 10px;text-align:left;border-bottom:1px solid #ccc}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+<h1 id="title">按模块完成 · 连续笔画离线对照</h1>
+<p class="note">这是同一批原始中心线的离线重新规划，保留全部原线条。颜色表示候选模块，不表示已识别的皴法。模块边界与同笔连接仍待验证；尚未接入相机，也没有学习真实墨水渗化。</p>
+<div class="stats" id="stats"></div>
+<p><button id="play">播放</button> <button id="reset">从头</button> <select id="pace"><option value="1">逐笔</option><option value="5">每次5笔</option><option value="20">每次20笔</option></select> <label><input id="progress" type="range" min="0" max="1000" value="80"></label> <span id="percent"></span></p>
+<p id="status"></p>
+<div class="grid"><figure><figcaption>原图／自动对象候选</figcaption><img id="reference" src="source.png"><button id="toggle">查看候选分区</button></figure><figure><figcaption>旧距离感知排序（同一批曲线重排）</figcaption><canvas id="old" width="992" height="992"></canvas><small>长度÷(1＋空移距离/10)；不代表昨天的实际执行日志。</small></figure><figure><figcaption>先完成当前模块，再转下一模块</figcaption><canvas id="new" width="992" height="992"></canvas><small>当前笔红色；灰色为尚未画的计划线。归属待定的区域单独列在后面。</small></figure></div>
+<p><label><input style="width:auto" id="ghost" type="checkbox" checked>显示尚未画的线</label> <label><input style="width:auto" id="colors" type="checkbox" checked>按模块着色</label></p>
+<details><summary>查看完整提取、连接诊断与模块归属</summary><p><a href="assembled_modules.png">全部中心线（彩图）</a> · <a href="ordered_preview.svg">顺序SVG</a> · <a href="offline_plan.json">离线计划JSON</a> · <a href="assembly_diagnostics.json">每处连接及待定记录</a> · <a href="statistics.json">统计</a></p><table id="modules"><tr><th>模块</th><th>归属依据</th><th>曲线数</th><th>状态</th></tr></table></details>
+<p class="note">起落次数减少 ≠ 已证明实画更快或不晕墨。本预览没有机械臂坐标、下压量或可执行指令；笔宽与近期叠墨评分仅是未标定的几何近似。真实闭环需固定相机、纸面配准和逐笔前后图。</p>
+<script>
+const DATA=__DATA__;
+const el=id=>document.getElementById(id);let timer=null,partitions=false;
+el('title').textContent=DATA.id+' · 模块与连续笔画离线对照';
+const s=DATA.stats;
+el('stats').textContent=`曲线 ${s.baseline.count} → ${s.assembled.count}　连接 ${s.accepted_joins} 处　候选对象 ${s.sam_owned_modules} 个　归属待定 ${s.unresolved_source_curves} 条　原曲线删除 0`;
+const warning=document.createElement('p');warning.className='note';warning.textContent=`自动检查：仍有 ${s.assembled.under_2mm} 条短于2毫米（按186.8毫米画宽折算）；空移像素距离 ${Math.round(s.baseline_route.air_travel_px)} → ${Math.round(s.module_route.air_travel_px)}；近期重叠均值 ${s.baseline_route.predicted_overlap_mean.toFixed(3)} → ${s.module_route.predicted_overlap_mean.toFixed(3)}。这些几何代理有退步，不能承诺实画更快或不晕墨。尚不能作为上机版本。`;el('stats').after(warning);
+function color(m){const h=(m*.61803398875%1)*360;return `hsl(${h} 68% 38%)`}
+function line(ctx,p,c,w){ctx.beginPath();p.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.strokeStyle=c;ctx.lineWidth=w;ctx.stroke()}
+function paint(id,curves,route,f){const ctx=el(id).getContext('2d');ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,496,496);ctx.fillStyle='white';ctx.fillRect(0,0,496,496);if(el('ghost').checked)curves.forEach(r=>line(ctx,r.points,'#e3e6e4',.65));const n=Math.min(route.length,Math.floor(f*route.length));route.slice(0,n).forEach(r=>{const q=curves[r.curve];line(ctx,q.points,el('colors').checked?color(q.module):'#222',.9)});if(n&&n<route.length){const r=route[n-1],q=curves[r.curve],p=r.reverse?[...q.points].reverse():q.points;line(ctx,p,'#cf422a',1.5);ctx.beginPath();ctx.arc(...p.at(-1),2.4,0,Math.PI*2);ctx.fillStyle='#cf422a';ctx.fill()}return n}
+function draw(){const f=+el('progress').value/1000;const oldn=paint('old',DATA.old,DATA.oldRoute,f),n=paint('new',DATA.new,DATA.route,f);el('percent').textContent=Math.round(f*100)+'%';const current=DATA.route[Math.max(0,n-1)];el('status').textContent=`对照已展示 ${oldn}/${DATA.old.length} 笔；新规划 ${n}/${DATA.new.length} 笔，当前模块 ${current?String(current.module+1).padStart(2,'0'):'—'}。两边按各自笔数比例播放，不是实际时间。`}
+function stop(){clearInterval(timer);timer=null;el('play').textContent='播放'}
+el('play').onclick=()=>{if(timer){stop();return}el('play').textContent='暂停';timer=setInterval(()=>{const v=+el('progress').value+1000/DATA.route.length*(+el('pace').value);el('progress').value=Math.min(1000,Math.ceil(v));draw();if(v>=1000)stop()},100)};
+el('reset').onclick=()=>{stop();el('progress').value=0;draw()};el('progress').oninput=draw;el('ghost').onchange=draw;el('colors').onchange=draw;
+el('toggle').onclick=()=>{partitions=!partitions;el('reference').src=partitions?'module_candidates.png':'source.png';el('toggle').textContent=partitions?'查看原图':'查看候选分区'};
+const table=el('modules');DATA.modules.forEach(m=>{const row=table.insertRow();[String(m.id+1).padStart(2,'0'),m.sam_key?'SAM对象候选':'局部空间分组（归属待定）',DATA.new.filter(r=>r.module===m.id).length,'未经实例标注验证'].forEach(t=>row.insertCell().textContent=t)});draw();
+</script></html>

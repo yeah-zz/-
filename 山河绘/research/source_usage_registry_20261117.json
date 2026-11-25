@@ -1,0 +1,62 @@
+{
+  "records": [
+    {
+      "source_identity": "ganjing_video:1gga38p7dgh3iKX2kYUhFzF7k1ns1c",
+      "usage": "known_development_object_presence_training",
+      "all_frames_resolutions_and_crops_one_work": true,
+      "eligible_for_independent_test": false,
+      "usage_change_record": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\regional_presence_trial_20261117\\split_retirement.json",
+      "historical_artifacts_preserved": true
+    },
+    {
+      "source_identity": "clpd_filename_group:wangximen",
+      "usage": "opened_prospective_check_not_training",
+      "training_allowed": false,
+      "eligible_for_fresh_blind_test": false,
+      "attribution_unverified": true,
+      "record": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\object_prospective_20261118\\protocol.json"
+    },
+    {
+      "source_identity": "clpd_filename_group:zouzhe_xiangjiaoqiuwutu",
+      "usage": "opened_prospective_check_not_training",
+      "training_allowed": false,
+      "eligible_for_fresh_blind_test": false,
+      "attribution_unverified": true,
+      "record": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\object_prospective_20261118\\protocol.json"
+    },
+    {
+      "source_identity": "CMA:1986.49.10",
+      "usage": "known_full_artwork_geometry_and_tree_rock_regression",
+      "eligible_for_fresh_blind_test": false,
+      "record": "F:\\山河绘\\山河绘\\reports\\20261122_new_artwork_replay.md"
+    },
+    {
+      "source_identity": "CMA:1975.64.2",
+      "usage": "known_full_artwork_geometry_and_tree_rock_regression",
+      "eligible_for_fresh_blind_test": false,
+      "record": "F:\\山河绘\\山河绘\\reports\\20261122_faint_outline_branch_probe.md"
+    },
+    {
+      "source_identity": "HKMA:Wucius_WONG_Suggested_Class_Activities_CHIN:page4",
+      "usage": "opened_named_teaching_example_diagnostic",
+      "eligible_for_fresh_blind_test": false,
+      "localized_stroke_truth": false,
+      "illustrator_verified": false,
+      "record": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_main_tracks_20261122\\protocol.json"
+    },
+    {
+      "source_identity": "clpd_filename_group:sushi_yanjiangdiezhangtu",
+      "usage": "opened_20261116_known_object_regression",
+      "eligible_for_fresh_blind_test": false,
+      "attribution_unverified": true,
+      "record": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\guohua_priority_check_20261116\\test_manifest.json"
+    },
+    {
+      "source_identity": "clpd_filename_group:xiaoyuncun_qiushanxinglvtu",
+      "usage": "opened_20261116_known_object_regression",
+      "eligible_for_fresh_blind_test": false,
+      "attribution_unverified": true,
+      "record": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\guohua_priority_check_20261116\\test_manifest.json"
+    }
+  ]
+}

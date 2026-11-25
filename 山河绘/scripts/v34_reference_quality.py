@@ -1,0 +1,16 @@
+# -*- coding: utf-8 -*-
+"""Audit reference provenance and image support without rewriting any labels."""
+from v34_candidate_audit import *
+import v27_separation_faint as old
+
+def main():
+    mf={r['id']:r for r in read(V31/'manifest.json')['development']};source={r['id']:(r,rgb,refs) for r,rgb,refs,valid,bg in old.cases('development') if r['id'] in mf};records=[];source_records=[]
+    for key,r in mf.items():
+        src,rgb,refs=source[key];pack=read(r['reference_file'])['paths'];path=src.get('labels');doc=read(path) if path else {};same_geometry=len(refs)==len(pack) and all(np.allclose(np.asarray(a),np.asarray(b),atol=.001) for a,b in zip(refs,pack));same_rgb=np.array_equal(rgb,np.asarray(Image.open(r['raw']).convert('RGB')));dimensions=doc.get('width',rgb.shape[1])==rgb.shape[1] and doc.get('height',rgb.shape[0])==rgb.shape[0];provenance='user_reviewed_partial' if 'user_reviewed' in str(src.get('provenance','')) or doc.get('label_provenance')=='user_reviewed' else 'assistant_partial_not_expert';e=Evidence(rgb);z=np.load(r['mask_file']);valid=z['valid'];d=read(ROOT34/'cases'/(key+'.json'));source_records.append(dict(id=key,source_label_file=path,label_sha256=digest(path) if path else None,provenance=provenance,reference_geometry_matches_source=bool(same_geometry),pixels_match_source=bool(same_rgb),label_dimensions_match=bool(dimensions),physical_pen_lifts_not_gold=True))
+        for row in d['records']:
+            raw=dense(np.asarray(pack[row['reference_id']],np.float32));xy=np.rint(raw).astype(int);xy[:,0]=np.clip(xy[:,0],0,valid.shape[1]-1);xy[:,1]=np.clip(xy[:,1],0,valid.shape[0]-1);p=raw[valid[xy[:,1],xy[:,0]]>0];u=tangent(raw)[valid[xy[:,1],xy[:,0]]>0];n=np.c_[-u[:,1],u[:,0]];ink=np.maximum.reduce([sample(e.smooth,p+n*a) for a in [-3,-1.5,0,1.5,3]]);weak=ink<.018;longest=max([b-a for a,b in runs(weak)] or [0]);frac=float(weak.mean());flag=frac>.15 or longest>=12;records.append(dict(id=key,reference_id=row['reference_id'],source_provenance=provenance,weak_image_evidence_fraction=frac,longest_weak_run_samples=int(longest),image_support_needs_review=bool(flag),not_proof_reference_is_wrong=True,not_used_to_change_labels=True,diagnostic_category=row['tolerances']['3']['category']))
+    summary=dict(reference_chains=len(records),provenance_counts={name:sum(r['source_provenance']==name for r in records) for name in ['user_reviewed_partial','assistant_partial_not_expert']},image_support_flags=sum(r['image_support_needs_review'] for r in records),all_source_geometry_matches=all(r['reference_geometry_matches_source'] for r in source_records),all_source_pixels_match=all(r['pixels_match_source'] for r in source_records),all_label_dimensions_match=all(r['label_dimensions_match'] for r in source_records),flags_are_uncertainty_not_error_gold=True,reference_labels_rewritten=False,diagnosis_categories_are_provisional=True)
+    jsave(ROOT34/'reference_quality_audit.json',dict(summary=summary,sources=source_records,records=records,protocol=dict(image_evidence_only_alpha_threshold=.018,normal_tolerance_px=3,weak_fraction_flag=.15,long_weak_run_flag=12,weak_signal_may_be_real_faint_ink=True,no_model_prediction_used_for_label_audit=True)))
+    print('V34_REFERENCE_AUDIT',json.dumps(summary),flush=True)
+
+if __name__=='__main__':main()

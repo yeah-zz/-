@@ -1,0 +1,184 @@
+{
+  "version": "2026-11-22",
+  "goals": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "main_tracks_now": [
+    1,
+    2
+  ],
+  "stages": [
+    {
+      "id": "P0",
+      "name": "基线与报告制度",
+      "status": "engineering_complete"
+    },
+    {
+      "id": "P1",
+      "name": "可靠数据与知识技能参考",
+      "status": "priority_in_progress"
+    },
+    {
+      "id": "P2",
+      "name": "对象与皴法辨识",
+      "status": "candidates_not_validated",
+      "goals": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "完整山石与笔触",
+      "status": "known_regression_support_quality_not_validated",
+      "goals": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "单Agent离线原型",
+      "status": "planned_not_implemented",
+      "engineering_can_start": true
+    },
+    {
+      "id": "P5",
+      "name": "树木技能",
+      "status": "waiting_for_goals1and2",
+      "requires_goals": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "整幅临摹与同风格创作",
+      "status": "waiting_for_validated_components"
+    },
+    {
+      "id": "P7",
+      "name": "实体毛笔与闭环",
+      "status": "not_validated_default_offline"
+    }
+  ],
+  "report_questions": [
+    "推进哪项目标",
+    "实际新增什么能力",
+    "还有哪些失败",
+    "是否通过独立验证"
+  ],
+  "plan_file": "F:\\山河绘\\山河绘\\PROJECT_PLAN.md",
+  "plan_sha256": "92f3683e5515802faec47feed558c8a9edda624464835e9d6630d845bce32a8f",
+  "report_template": "F:\\山河绘\\山河绘\\research\\ROUND_REPORT_TEMPLATE.md",
+  "baseline_checks": {
+    "approved500": true,
+    "working489": true
+  },
+  "agent_implemented": false,
+  "production_replaced": false,
+  "robot_connected": false,
+  "canonical_algorithm_roadmap": "F:\\山河绘\\山河绘\\MASTER_ROADMAP.md",
+  "latest_round_report": "F:\\山河绘\\山河绘\\reports\\20261125_professional_data_pilot.md",
+  "latest_evidence_pack": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\whole_rock_evidence_20261117\\packet.json",
+  "latest_source_followup": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\clear_rock_sources_20261117\\local_references.json",
+  "latest_region_presence_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\regional_presence_trial_20261117\\results.json",
+  "latest_scale_diagnostic": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\object_scale_pairs_20261118\\results.json",
+  "latest_global_detail_gate": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\global_detail_gate_20261118\\results.json",
+  "latest_prospective_object_check": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\object_prospective_20261118\\results.json",
+  "latest_ink_owner_diagnostic": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\ink_owner_diagnostic_20261118\\results.json",
+  "latest_ink_run_review": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\ink_run_review_20261118\\results.json",
+  "latest_training_band_reference": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\training_ink_bands_20261118\\dataset_manifest.json",
+  "latest_two_work_band_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\two_work_bands_20261118\\results.json",
+  "latest_role_style_evidence": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\role_style_evidence_20261118\\results.json",
+  "latest_teacher_evidence": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\independent_teacher_intake_20261118\\source_admission.json",
+  "latest_stroke_event_reference": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\stroke_event_review_20261118\\source_events.json",
+  "latest_stroke_event_review_url": "http://127.0.0.1:54338/",
+  "latest_paper_seam_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_seam_trial_20261118\\results.json",
+  "latest_paper_context_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_context_trial_20261118\\results.json",
+  "latest_paper_seam_transfer": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_seam_transfer_20261118\\results.json",
+  "latest_paper_seam_region_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_seam_regions_20261118\\results.json",
+  "latest_paper_source_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_source_trial_20261118\\results.json",
+  "latest_paper_flank_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_flank_trial_20261119\\results.json",
+  "latest_paper_width_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_width_trial_20261119\\results.json",
+  "latest_paper_tracking_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_tracking_nearest_20261121\\results.json",
+  "latest_paper_extension_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_extension_trial_20261121\\results.json",
+  "latest_paper_extension_validation": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_extension_validation_20261121\\results.json",
+  "latest_paper_stop_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_stop_trial_20261121\\results.json",
+  "latest_paper_persistent_stop_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_persistent_stop_trial_20261121\\results.json",
+  "latest_paper_persistent_validation": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_persistent_validation_20261121\\results.json",
+  "latest_paper_stop_challenge": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_stop_challenge_20261121\\results.json",
+  "latest_paper_join_guard_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_join_guard_refined_20261121\\results.json",
+  "latest_paper_join_guard_validation": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\paper_join_guard_validation_20261121\\results.json",
+  "latest_faint_ink_continuation": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_continuation_trial_20261121\\results.json",
+  "latest_faint_ink_direction_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_direction_trial_20261121\\results.json",
+  "latest_faint_ink_direction_validation": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_direction_validation_20261121\\results.json",
+  "latest_faint_ink_natural_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_natural_trial_20261121\\results.json",
+  "latest_faint_ink_anchor_trial": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_anchor_trial_20261121\\results.json",
+  "latest_faint_ink_anchor_validation": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_anchor_validation_20261121\\results.json",
+  "latest_faint_ink_bridge": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_bridge_20261121\\results.json",
+  "latest_faint_ink_bridge_sections": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_bridge_sections_20261121\\results.json",
+  "latest_faint_ink_bridge_sections_holdout": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_bridge_sections_20261121\\holdout\\results.json",
+  "latest_faint_ink_segment_holdout": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_segment_holdout_20261121\\results.json",
+  "latest_faint_ink_segment_holdout_addendum": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_segment_holdout_20261121\\landscape_addendum\\results.json",
+  "latest_faint_ink_bridge_endpoints": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_bridge_endpoints_20261121\\results.json",
+  "latest_faint_ink_endpoints_holdout": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_endpoints_holdout_20261121\\results.json",
+  "latest_faint_ink_color_texture": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_color_texture_20261121\\results.json",
+  "latest_faint_ink_narrow_profile": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_narrow_profile_20261121\\results.json",
+  "latest_faint_ink_narrow_support": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_narrow_support_20261121\\span_5\\results.json",
+  "latest_faint_ink_narrow_support_holdout": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_ink_narrow_support_holdout_20261121\\results.json",
+  "latest_whole_scene_repair_benchmark": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\whole_scene_repair_benchmark_20261121\\results.json",
+  "latest_whole_scene_module_review": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\whole_scene_repair_benchmark_20261121\\module_review.json",
+  "current_work_focus": "whole_object_stroke_reconstruction_and_role_ownership",
+  "faint_ink_micro_refinement": "archived_pending_whole_stroke_evidence",
+  "latest_object_stroke_gate": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\object_stroke_gate_20261121\\results.json",
+  "latest_guided_ink_reconstruction": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\guided_ink_reconstruction_20261121\\results.json",
+  "latest_guided_ink_paths": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\guided_ink_reconstruction_20261121\\candidate_paths.json",
+  "latest_automatic_ink_ownership": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\automatic_ink_ownership_20261121\\results.json",
+  "latest_ink_route_ranking_diagnostic": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\automatic_ink_ownership_20261121\\ranking_diagnostic.json",
+  "latest_structural_ink_ranking": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\structural_ink_ranking_20261122\\results.json",
+  "latest_structure_assisted_trial_paths": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\structural_ink_ranking_20261122\\paths.json",
+  "latest_branch_attachment_check": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\branch_attachment_20261122\\results.json",
+  "latest_branch_crop_sensitivity": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\branch_attachment_20261122\\crop_sensitivity.json",
+  "latest_new_artwork_replay": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\new_artwork_replay_20261122\\results.json",
+  "latest_faint_outline_branch_probe": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\faint_outline_branch_probe_20261122\\results.json",
+  "latest_continuity_attachment_gate": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\continuity_attachment_gate_20261122\\results.json",
+  "revised_near_term_priorities": [
+    {
+      "stage": "P1/P2",
+      "goal": 1,
+      "task": "出处明确的皴法笔组与按作者留出验证"
+    },
+    {
+      "stage": "P2",
+      "goal": 2,
+      "task": "跨作品树石区分及双向错误复核"
+    },
+    {
+      "stage": "P3/P4",
+      "scope": "已知回归与离线工程支持"
+    }
+  ],
+  "latest_rock_boundary_branch_direction": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\rock_boundary_branch_direction_20261122\\results.json",
+  "latest_recognition_main_tracks": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_main_tracks_20261122\\results.json",
+  "latest_recognition_group_regression": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_groups_20261123\\results.json",
+  "latest_recognition_rejection_fusion": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_rejection_fusion_20261123\\results.json",
+  "latest_recognition_structure": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_structure_20261123\\results.json",
+  "latest_recognition_role_gap": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_role_gap_20261123\\results.json",
+  "latest_recognition_attached_ink": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_attached_ink_20261123\\results.json",
+  "latest_recognition_branch_stop": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_branch_stop_20261123\\results.json",
+  "latest_recognition_weak_branch": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_weak_branch_20261123\\results.json",
+  "latest_recognition_full_trunk": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_full_trunk_20261123\\results.json",
+  "latest_recognition_trunk_envelope": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_trunk_envelope_20261123\\results.json",
+  "latest_recognition_trunk_source_background": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_trunk_source_background_20261123\\results.json",
+  "latest_recognition_trunk_identity": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_trunk_identity_20261123\\results.json",
+  "latest_recognition_trunk_entrance": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\recognition_trunk_entrance_20261124\\results.json",
+  "latest_trunk_archive_transfer": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\trunk_archive_transfer_20261124\\results.json",
+  "latest_trunk_rock_context": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\trunk_rock_context_20261124\\results.json",
+  "latest_trunk_rock_holdout": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\trunk_rock_context_holdout_20261124\\results.json",
+  "latest_scene_topology": "E:\\Codex_Workspace_Data\\Gongbi_Line_Model_20261022\\scene_topology_20261124\\results.json"
+}

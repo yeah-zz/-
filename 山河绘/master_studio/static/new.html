@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>山河绘 · 景区 AI 画房</title>
+<link rel="stylesheet" href="/new.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="/new"><span class="mark">山</span><span>山河绘<small>SCENIC AI STUDIO</small></span></a>
+    <nav class="modes">
+      <button class="mode active" data-mode="landscape">山水长卷</button>
+      <button class="mode" data-mode="tree">树法</button>
+      <button class="mode" data-mode="flower">花鸟</button>
+      <button class="mode" data-mode="masters">名家</button>
+    </nav>
+    <div class="top-right"><span class="live-dot"></span>AI 画师在线 <a class="classic" href="/classic">经典工作台 ↗</a></div>
+  </header>
+
+  <main class="layout">
+    <aside class="artist-rail">
+      <div class="rail-head"><span>名家笔意</span><em>05</em></div>
+      <div class="artist-list" id="artistList"></div>
+      <div class="rail-note">选一位名家，或直接在右侧说“画四幅倪瓒的山水”。</div>
+    </aside>
+
+    <section class="stage">
+      <div class="stage-head">
+        <div>
+          <div class="kicker" id="stageKicker">今日景区 · 山河画房</div>
+          <h1 id="stageTitle">拟黄公望 · 富春山居</h1>
+        </div>
+        <div class="stage-tools">
+          <button class="ghost" id="surpriseBtn">换一景</button>
+          <button class="primary" id="generateBtn">生成四幅</button>
+        </div>
+      </div>
+
+      <div class="canvas" id="canvas">
+        <img id="mainImage" alt="山水预览">
+        <div class="canvas-empty" id="canvasEmpty">正在读取最近一版画稿…</div>
+        <div class="canvas-label" id="canvasLabel"></div>
+      </div>
+
+      <div class="thumbs" id="thumbs"></div>
+
+      <div class="stage-foot">
+        <div class="mode-options" id="modeOptions"></div>
+        <div class="foot-actions">
+          <a id="exportLink" href="/classic" class="export">导出机械臂稿 ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <aside class="chat">
+      <div class="chat-head">
+        <div class="ai-avatar">山</div>
+        <div><b>山河</b><small>景区 AI 画师 · 在线</small></div>
+        <span class="chat-live">LIVE</span>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="chips" id="chips"></div>
+      <form class="chat-form" id="chatForm">
+        <input id="chatInput" autocomplete="off" placeholder="问名家、选画家，或说：画四幅倪瓒的山水">
+        <button type="submit" aria-label="发送">↑</button>
+      </form>
+    </aside>
+  </main>
+</div>
+<script src="/new.js"></script>
+</body>
+</html>

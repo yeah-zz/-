@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>__ID__ · 离线逐笔候选</title>
+<style>body{font:17px/1.6 system-ui;background:#f4f1e8;color:#263e35;max-width:1000px;padding:20px;margin:auto}canvas{background:white;width:min(90vw,800px);display:block;border:1px solid #bbb}button,input{font:inherit;margin:6px}input[type=range]{width:65%}p{margin:10px 0}</style>
+<h1>__ID__ · 离线逐笔候选</h1><p>颜色区分笔画；红色为当前笔。模块沿用未验证的图像分组。此页是计划回放，不连接机械臂，也没有模拟墨水。</p>
+<button id="play">播放</button><button id="reset">回到开始</button><button id="next">下一笔</button><label><input type="checkbox" id="source">原图底图</label>
+<p id="status"></p><input id="step" type="range" min="0" value="0"><canvas id="canvas" width="992" height="992"></canvas>
+<script>const DATA=__DATA__;const slider=document.getElementById('step'),status=document.getElementById('status'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+const bg=new Image();bg.src='__SOURCE__';bg.onload=render;slider.max=DATA.actions.length;let timer=null;
+function render(){const n=+slider.value;ctx.fillStyle='white';ctx.fillRect(0,0,992,992);if(document.getElementById('source').checked){ctx.globalAlpha=.3;ctx.drawImage(bg,0,0,992,992);ctx.globalAlpha=1;}
+for(let k=0;k<n;k++){const a=DATA.actions[k],r=DATA.curves[a.curve],p=a.reverse?[...r.points].reverse():r.points;ctx.strokeStyle=k===n-1?'#e03929':`hsl(${(a.curve*137.5)%360} 65% 38%)`;ctx.lineWidth=k===n-1?2.3:1.2;ctx.beginPath();p.forEach((v,j)=>{if(j)ctx.lineTo(v[0]*2,v[1]*2);else ctx.moveTo(v[0]*2,v[1]*2)});ctx.stroke();}
+status.textContent=`已显示 ${n} / ${DATA.actions.length} 笔`+(n?` · 候选模块 ${DATA.actions[n-1].module}`:'');}
+function stop(){if(timer)clearInterval(timer);timer=null;document.getElementById('play').textContent='播放';}
+slider.oninput=()=>{stop();render()};document.getElementById('source').onchange=render;
+document.getElementById('next').onclick=()=>{stop();slider.value=Math.min(+slider.value+1,+slider.max);render()};
+document.getElementById('reset').onclick=()=>{stop();slider.value=0;render()};
+document.getElementById('play').onclick=()=>{if(timer){stop();return}document.getElementById('play').textContent='暂停';timer=setInterval(()=>{if(+slider.value>=+slider.max){stop();return}slider.value=+slider.value+1;render()},120)};render();</script></html>

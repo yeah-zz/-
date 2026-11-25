@@ -1,0 +1,5 @@
+from autonomous_review_v19 import *
+folder=ROOT/'reviewer';old=read(folder/'cv_report.json');jsave(folder/'geometry_trial_cv.json',old);rows=inputs();values=[]
+for i,group in enumerate(['reviewed_heye','sina_tutorial']):
+    m=Reviewer().cuda();m.load_state_dict(torch.load(folder/('fold_'+str(i)+'.pt'),map_location='cuda',weights_only=False)['model']);m.eval();rr=assess(m,[r for r in rows if r['group']==group and r['anchor']]);values.extend([dict(r,heldout_group=group) for r in rr])
+positive=[r for r in values if r['positive']];accepted=[r for r in values if r['auto_accept']];old.update(cross_group_records=values,auto_accepted_count=len(accepted),auto_accepted_positive_2px_fraction=float(np.mean([r['center_error']<=2 for r in accepted if r['positive']])) if any(r['positive'] for r in accepted) else None,accepted_background_false_positives=sum(not r['positive'] for r in accepted),gate_adjusted_after_development_inspection_not_blind=True);jsave(folder/'cv_report.json',old);print('REVIEW_GATE',json.dumps({k:v for k,v in old.items() if k!='cross_group_records'}),flush=True)
